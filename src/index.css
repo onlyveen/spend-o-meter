@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  @apply bg-sage text-ink dark:bg-forest-dark dark:text-cream;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.tick-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 28px;
+}
+
+.tick-bars span {
+  width: 2px;
+  background: currentColor;
+  opacity: 0.35;
+  border-radius: 1px;
+}
+
+.tick-bars span.filled {
+  opacity: 0.9;
+}
