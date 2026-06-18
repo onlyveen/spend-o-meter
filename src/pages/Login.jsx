@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import Sunburst from '../components/Sunburst'
 
 export default function Login() {
   const [mode, setMode] = useState('sign_in')
@@ -34,8 +35,14 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-sage px-5">
-      <div className="w-full max-w-sm rounded-block bg-cream p-6">
-        <h1 className="text-3xl font-bold leading-tight text-ink">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-block bg-cream p-6">
+        <Sunburst
+          size={260}
+          color="#3D4836"
+          opacity={0.12}
+          className="pointer-events-none absolute -right-14 -top-14"
+        />
+        <h1 className="relative text-3xl font-bold leading-tight text-ink">
           <span className="text-muted">Track and Spend</span>
           <br />
           Your Money
@@ -69,13 +76,13 @@ export default function Login() {
             />
           </div>
 
-          {error && <p className="text-sm text-terracotta">{error}</p>}
+          {error && <p className="text-sm text-forest-dark">{error}</p>}
           {message && <p className="text-sm text-forest">{message}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-block bg-forest py-3 text-sm font-semibold text-cream transition disabled:opacity-60"
+            className="w-full rounded-block bg-terracotta py-3 text-sm font-semibold text-cream transition disabled:opacity-60"
           >
             {loading ? 'Please wait…' : mode === 'sign_in' ? 'Sign In' : 'Sign Up'}
           </button>

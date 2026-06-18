@@ -106,7 +106,7 @@ export default function AddExpenseForm({ onAdd }) {
               key={p.value}
               onClick={() => update('payment_mode', p.value)}
               className={`rounded-block py-2 text-[11px] font-medium ${
-                form.payment_mode === p.value ? 'bg-mustard text-ink' : 'bg-sage/40 text-ink'
+                form.payment_mode === p.value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
               }`}
             >
               {p.label}
@@ -126,12 +126,12 @@ export default function AddExpenseForm({ onAdd }) {
         />
       </div>
 
-      {error && <p className="text-sm text-terracotta">{error}</p>}
+      {error && <p className="text-sm text-forest-dark">{error}</p>}
 
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-block bg-forest py-3 text-sm font-semibold text-cream transition disabled:opacity-60"
+        className="w-full rounded-block bg-terracotta py-3 text-sm font-semibold text-cream transition disabled:opacity-60"
       >
         {saving ? 'Saving…' : 'Add Expense'}
       </button>

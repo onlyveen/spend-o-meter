@@ -3,7 +3,7 @@ import { formatINR } from '../lib/format'
 import { CATEGORY_ICONS } from '../lib/constants'
 
 const BLOCK_STYLES = [
-  'bg-mustard text-ink',
+  'bg-sage text-ink',
   'bg-forest text-cream',
 ]
 

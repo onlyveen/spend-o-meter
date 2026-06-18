@@ -118,7 +118,7 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
                 <div className="flex gap-2">
                   <button
                     onClick={saveEdit}
-                    className="flex-1 rounded-block bg-forest py-1.5 text-sm font-semibold text-cream"
+                    className="flex-1 rounded-block bg-terracotta py-1.5 text-sm font-semibold text-cream"
                   >
                     Save
                   </button>

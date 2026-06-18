@@ -48,7 +48,7 @@ export default function App() {
   const title = tab === 'add' ? ['Quick', 'Add Expense'] : TAB_TITLES[tab]
 
   return (
-    <div className="min-h-screen bg-sage pb-28">
+    <div className="min-h-screen bg-sage">
       <header className="flex items-center justify-between px-5 pt-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-forest text-sm font-semibold text-cream">
           {initial}
@@ -68,7 +68,7 @@ export default function App() {
               <p className="truncate px-3 py-2 text-xs text-muted">{user.email}</p>
               <button
                 onClick={signOut}
-                className="w-full px-3 py-2 text-left text-sm font-medium text-terracotta hover:bg-sage/40"
+                className="w-full px-3 py-2 text-left text-sm font-medium text-forest-dark hover:bg-sage/40"
               >
                 Sign out
               </button>
@@ -85,7 +85,7 @@ export default function App() {
         </h1>
       </div>
 
-      <main className="mx-auto max-w-xl space-y-3 px-5 pt-6">
+      <main className="mx-auto w-full max-w-xl space-y-3 px-5 pt-6 pb-28">
         <MonthSwitcher month={month} onChange={setMonth} />
 
         {tab === 'dashboard' && <Dashboard expenses={expenses} budgets={budgets} />}
@@ -97,40 +97,31 @@ export default function App() {
         {tab === 'summary' && <MonthlySummary month={month} expenses={expenses} />}
       </main>
 
-      <nav className="fixed bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full bg-forest px-2 py-2 shadow-xl">
-        {TABS.slice(0, 2).map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg ${
-              tab === t.key ? 'bg-mustard text-ink' : 'text-cream/70'
-            }`}
-            aria-label={t.label}
-          >
-            {t.icon}
-          </button>
-        ))}
+      <nav className="liquid-glass fixed inset-x-0 bottom-0 z-50 h-20 overflow-visible rounded-t-[28px] px-2 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex h-full items-center justify-around pr-24">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 ${
+                tab === t.key ? 'bg-mustard text-ink' : 'text-cream/80'
+              }`}
+              aria-label={t.label}
+            >
+              <span className="text-4xl leading-none">{t.icon}</span>
+              <span className="text-[9px] font-medium uppercase tracking-wide">{t.label}</span>
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => setTab('add')}
           aria-label="Add expense"
-          className={`flex h-12 w-12 items-center justify-center rounded-full text-2xl font-bold ${
-            tab === 'add' ? 'bg-terracotta text-cream' : 'bg-mustard text-ink'
+          className={`absolute -right-4 top-1/2 flex h-28 w-28 -translate-y-1/2 items-center justify-center rounded-full text-3xl font-bold shadow-lg ring-4 ring-sage ${
+            tab === 'add' ? 'bg-terracotta text-cream' : 'bg-terracotta/90 text-cream'
           }`}
         >
           +
         </button>
-        {TABS.slice(2).map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-lg ${
-              tab === t.key ? 'bg-mustard text-ink' : 'text-cream/70'
-            }`}
-            aria-label={t.label}
-          >
-            {t.icon}
-          </button>
-        ))}
       </nav>
     </div>
   )

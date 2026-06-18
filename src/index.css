@@ -11,20 +11,22 @@ body {
   font-family: 'Space Grotesk', system-ui, sans-serif;
 }
 
-.tick-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 28px;
+.liquid-glass {
+  background: linear-gradient(180deg, rgba(61, 72, 54, 0.55), rgba(61, 72, 54, 0.75));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 8px 32px rgba(27, 30, 22, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
-.tick-bars span {
-  width: 2px;
-  background: currentColor;
-  opacity: 0.35;
-  border-radius: 1px;
-}
-
-.tick-bars span.filled {
-  opacity: 0.9;
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 45%);
+  pointer-events: none;
 }

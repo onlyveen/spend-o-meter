@@ -51,7 +51,7 @@ export default function MonthlySummary({ month, expenses }) {
                 <XAxis dataKey="label" fontSize={11} stroke="#6E7460" />
                 <YAxis fontSize={11} width={46} stroke="#6E7460" />
                 <Tooltip formatter={(value) => formatINR(value)} />
-                <Bar dataKey="total" fill="#3D4836" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total" fill="#E0C53D" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -82,7 +82,7 @@ export default function MonthlySummary({ month, expenses }) {
       <div className="rounded-block bg-cream p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Cash vs Card vs UPI</p>
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-block bg-mustard p-3">
+          <div className="rounded-block bg-sage-dark p-3">
             <p className="text-xs text-ink/60">Cash</p>
             <p className="font-bold text-ink">{formatINR(cashVsCard.cash)}</p>
           </div>
@@ -90,14 +90,14 @@ export default function MonthlySummary({ month, expenses }) {
             <p className="text-xs text-cream/60">Card</p>
             <p className="font-bold text-cream">{formatINR(cashVsCard.card)}</p>
           </div>
-          <div className="rounded-block bg-terracotta p-3">
+          <div className="rounded-block bg-forest-dark p-3">
             <p className="text-xs text-cream/70">UPI</p>
             <p className="font-bold text-cream">{formatINR(cashVsCard.upi)}</p>
           </div>
         </div>
       </div>
 
-      <button onClick={handleExport} className="w-full rounded-block bg-forest py-3 text-sm font-semibold text-cream">
+      <button onClick={handleExport} className="w-full rounded-block bg-terracotta py-3 text-sm font-semibold text-cream">
         Export to CSV
       </button>
     </div>
