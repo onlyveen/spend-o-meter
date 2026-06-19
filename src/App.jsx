@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from './lib/AuthContext'
 import { useExpenses } from './lib/useExpenses'
 import { useBudget } from './lib/useBudget'
@@ -43,6 +43,7 @@ export default function App() {
   const [period, setPeriod] = useState('monthly')
   const [showSplash, setShowSplash] = useState(true)
   const updateAvailable = useAppUpdate()
+  const touchStartRef = useRef(null)
 
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
   const { budgets, saveBudgets } = useBudget(month, !loading && !!user)
@@ -51,6 +52,23 @@ export default function App() {
     const t = setTimeout(() => setShowSplash(false), 1000)
     return () => clearTimeout(t)
   }, [])
+
+  function handleTouchStart(e) {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+
+  function handleTouchEnd(e) {
+    if (!touchStartRef.current || tab === 'add') return
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y
+    touchStartRef.current = null
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return
+
+    const order = TABS.map((t) => t.key)
+    const index = order.indexOf(tab)
+    const nextIndex = dx < 0 ? index + 1 : index - 1
+    if (nextIndex >= 0 && nextIndex < order.length) setTab(order[nextIndex])
+  }
 
   if (showSplash) {
     return <Splash />
@@ -123,7 +141,11 @@ export default function App() {
           <img src="/images/icon.svg" alt="" className="h-20 shrink-0" />
         </div>
 
-        <main className="w-full space-y-3 px-5 pt-6 pb-28 md:pb-40">
+        <main
+          className="w-full space-y-3 px-5 pt-6 pb-28 md:pb-40"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <MonthSwitcher month={month} onChange={setMonth} />
 
           {tab === 'dashboard' && <Dashboard expenses={expenses} budgets={budgets} />}
