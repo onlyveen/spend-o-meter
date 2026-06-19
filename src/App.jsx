@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from './lib/AuthContext'
 import { useExpenses } from './lib/useExpenses'
 import { useBudget } from './lib/useBudget'
+import { useAppUpdate } from './lib/useAppUpdate'
 import { currentMonthStr } from './lib/format'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
+import Splash from './components/Splash'
+import UpdateBanner from './components/UpdateBanner'
 import MonthSwitcher from './components/MonthSwitcher'
 import AddExpenseForm from './components/AddExpenseForm'
 import Dashboard from './components/Dashboard'
@@ -38,22 +41,46 @@ export default function App() {
   const [tab, setTab] = useState('dashboard')
   const [month, setMonth] = useState(currentMonthStr())
   const [period, setPeriod] = useState('monthly')
+  const [showSplash, setShowSplash] = useState(true)
+  const updateAvailable = useAppUpdate()
 
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
   const { budgets, saveBudgets } = useBudget(month, !loading && !!user)
 
+  useEffect(() => {
+    const t = setTimeout(() => setShowSplash(false), 1000)
+    return () => clearTimeout(t)
+  }, [])
+
+  if (showSplash) {
+    return <Splash />
+  }
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-sage text-sm text-muted">Loading…</div>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-sage text-sm text-muted">
+        <span className="h-6 w-6 animate-spin rounded-full border-2 border-forest/20 border-t-forest" />
+        Loading…
+      </div>
     )
   }
 
   if (recovery) {
-    return <ResetPassword onDone={clearRecovery} />
+    return (
+      <>
+        <ResetPassword onDone={clearRecovery} />
+        <UpdateBanner show={updateAvailable} />
+      </>
+    )
   }
 
   if (!user) {
-    return <Login />
+    return (
+      <>
+        <Login />
+        <UpdateBanner show={updateAvailable} />
+      </>
+    )
   }
 
   const title =
@@ -72,7 +99,6 @@ export default function App() {
       <div className="mx-auto w-full max-w-xl">
         <header className="flex items-center justify-between px-5 pt-6">
           <div className="flex items-center gap-2">
-            <img src="/images/icon.svg" alt="" className="h-7 w-7" />
             <p className="text-sm font-semibold text-ink">Hi, {displayName}</p>
           </div>
           <button
@@ -88,12 +114,13 @@ export default function App() {
           </button>
         </header>
 
-        <div className="px-5 pt-6">
+        <div className="flex items-center justify-between gap-3 px-5 pt-6">
           <h1 className="text-3xl font-bold leading-tight text-ink">
             <span className="text-muted">{title[0]}</span>
             <br />
             {title[1]}
           </h1>
+          <img src="/images/icon.svg" alt="" className="h-20 shrink-0" />
         </div>
 
         <main className="w-full space-y-3 px-5 pt-6 pb-28 md:pb-40">
@@ -137,6 +164,8 @@ export default function App() {
           +
         </button>
       </nav>
+
+      <UpdateBanner show={updateAvailable} />
     </div>
   )
 }
