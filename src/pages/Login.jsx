@@ -16,6 +16,19 @@ export default function Login() {
     setMessage('')
     setLoading(true)
 
+    if (mode === 'forgot') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin,
+      })
+      setLoading(false)
+      if (error) {
+        setError(error.message)
+        return
+      }
+      setMessage('Check your inbox for a password reset link.')
+      return
+    }
+
     const { error } =
       mode === 'sign_in'
         ? await supabase.auth.signInWithPassword({ email, password })
@@ -48,7 +61,9 @@ export default function Login() {
           Your Money
         </h1>
         <p className="mb-6 mt-2 text-sm text-muted">
-          {mode === 'sign_in' ? 'Sign in to your account' : 'Create your account'}
+          {mode === 'sign_in' && 'Sign in to your account'}
+          {mode === 'sign_up' && 'Create your account'}
+          {mode === 'forgot' && 'Enter your email to reset your password'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -63,18 +78,20 @@ export default function Login() {
               placeholder="you@example.com"
             />
           </div>
-          <div>
-            <label className="mb-1 block text-xs text-muted">Password</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-block bg-sage/40 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70"
-              placeholder="••••••••"
-            />
-          </div>
+          {mode !== 'forgot' && (
+            <div>
+              <label className="mb-1 block text-xs text-muted">Password</label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-block bg-sage/40 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70"
+                placeholder="••••••••"
+              />
+            </div>
+          )}
 
           {error && <p className="text-sm text-forest-dark">{error}</p>}
           {message && <p className="text-sm text-forest">{message}</p>}
@@ -84,19 +101,42 @@ export default function Login() {
             disabled={loading}
             className="w-full rounded-block bg-terracotta py-3 text-sm font-semibold text-cream transition disabled:opacity-60"
           >
-            {loading ? 'Please wait…' : mode === 'sign_in' ? 'Sign In' : 'Sign Up'}
+            {loading
+              ? 'Please wait…'
+              : mode === 'sign_in'
+                ? 'Sign In'
+                : mode === 'sign_up'
+                  ? 'Sign Up'
+                  : 'Send Reset Link'}
           </button>
         </form>
 
+        {mode === 'sign_in' && (
+          <button
+            onClick={() => {
+              setMode('forgot')
+              setError('')
+              setMessage('')
+            }}
+            className="mt-3 w-full text-center text-xs text-muted hover:text-ink"
+          >
+            Forgot password?
+          </button>
+        )}
+
         <button
           onClick={() => {
-            setMode(mode === 'sign_in' ? 'sign_up' : 'sign_in')
+            setMode(mode === 'sign_up' ? 'sign_in' : mode === 'forgot' ? 'sign_in' : 'sign_up')
             setError('')
             setMessage('')
           }}
           className="mt-4 w-full text-center text-sm text-muted hover:text-ink"
         >
-          {mode === 'sign_in' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+          {mode === 'sign_up'
+            ? 'Already have an account? Sign in'
+            : mode === 'forgot'
+              ? 'Back to sign in'
+              : "Don't have an account? Sign up"}
         </button>
       </div>
     </div>

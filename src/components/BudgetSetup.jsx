@@ -32,9 +32,9 @@ export default function BudgetSetup({ budgets, onSave }) {
 
   return (
     <div className="space-y-2">
-      <div className="overflow-hidden rounded-block">
+      <div className="overflow-hidden rounded-block border-2 border-forest">
         {form.map((b, i) => (
-          <div key={b.category} className={`flex items-center justify-between gap-3 px-4 py-3 ${BLOCK_STYLES[i % 2]}`}>
+          <div key={b.category} className={`flex items-center justify-between gap-3 px-4 py-6 ${BLOCK_STYLES[i % 2]}`}>
             <div className="flex items-center gap-2">
               <span className="text-base">{CATEGORY_ICONS[b.category]}</span>
               <span className="text-sm font-medium uppercase tracking-wide">{b.category}</span>
@@ -47,7 +47,7 @@ export default function BudgetSetup({ budgets, onSave }) {
                 step="1"
                 value={b.monthly_limit}
                 onChange={(e) => update(b.category, e.target.value)}
-                className="w-24 rounded-md bg-black/10 px-2 py-1 text-right text-sm font-semibold outline-none"
+                className="w-24 h-10 rounded-md bg-black/10 px-3 py-1 text-left text-lg font-semibold outline-none"
               />
             </div>
           </div>

@@ -56,7 +56,7 @@ export default function Dashboard({ expenses, budgets }) {
           const style = BLOCK_STYLES[i % BLOCK_STYLES.length]
           const over = c.spent > c.limit
           return (
-            <div key={c.category} className={`rounded-block ${style.bg} p-2.5`}>
+            <div key={c.category} className={`rounded-block border-2 border-forest ${style.bg} p-2.5`}>
               <div className="mb-1.5 flex items-center justify-between">
                 <span className="text-base">{CATEGORY_ICONS[c.category]}</span>
                 {over && <span className="text-[9px] font-semibold text-forest-dark">OVER</span>}
