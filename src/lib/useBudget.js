@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { CATEGORIES, DEFAULT_BUDGETS } from './constants'
 
-export function useBudget(month) {
+export function useBudget(month, ready = true) {
   const [budgets, setBudgets] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -31,8 +31,8 @@ export function useBudget(month) {
   }, [month])
 
   useEffect(() => {
-    fetchBudget()
-  }, [fetchBudget])
+    if (ready) fetchBudget()
+  }, [fetchBudget, ready])
 
   async function saveBudgets(updatedBudgets) {
     const { data: userData } = await supabase.auth.getUser()

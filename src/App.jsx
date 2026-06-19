@@ -32,8 +32,8 @@ export default function App() {
   const [tab, setTab] = useState('dashboard')
   const [month, setMonth] = useState(currentMonthStr())
 
-  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month)
-  const { budgets, saveBudgets } = useBudget(month)
+  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
+  const { budgets, saveBudgets } = useBudget(month, !loading && !!user)
 
   if (loading) {
     return (

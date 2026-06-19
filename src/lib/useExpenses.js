@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
-export function useExpenses(month) {
+export function useExpenses(month, ready = true) {
   const [expenses, setExpenses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -30,8 +30,8 @@ export function useExpenses(month) {
   }, [month])
 
   useEffect(() => {
-    fetchExpenses()
-  }, [fetchExpenses])
+    if (ready) fetchExpenses()
+  }, [fetchExpenses, ready])
 
   async function addExpense(expense) {
     const { data: userData } = await supabase.auth.getUser()
