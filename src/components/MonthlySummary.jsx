@@ -1,17 +1,22 @@
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { useMonthlyHistory } from '../lib/useMonthlyHistory'
-import { formatINR, monthLabel } from '../lib/format'
+import { useSpendHistory } from '../lib/useSpendHistory'
+import { formatINR } from '../lib/format'
 import { expensesToCSV, downloadCSV } from '../lib/csv'
 import { CATEGORY_ICONS } from '../lib/constants'
 
-export default function MonthlySummary({ month, expenses }) {
-  const { history, loading } = useMonthlyHistory(month, 6)
+const PERIODS = [
+  { key: 'daily', label: 'Daily', heading: 'Day over Day' },
+  { key: 'weekly', label: 'Weekly', heading: 'Week over Week' },
+  { key: 'monthly', label: 'Monthly', heading: 'Month over Month' },
+  { key: 'yearly', label: 'Yearly', heading: 'Year over Year' },
+]
 
-  const chartData = useMemo(
-    () => history.map((h) => ({ label: monthLabel(h.month).split(' ')[0], total: h.total })),
-    [history]
-  )
+export default function MonthlySummary({ month, expenses, period, onPeriodChange }) {
+  const { history, loading } = useSpendHistory(month, period)
+  const activePeriod = PERIODS.find((p) => p.key === period) ?? PERIODS[2]
+
+  const chartData = useMemo(() => history.map((h) => ({ label: h.label, total: h.total })), [history])
 
   const biggestCategories = useMemo(() => {
     const map = {}
@@ -36,13 +41,28 @@ export default function MonthlySummary({ month, expenses }) {
 
   function handleExport() {
     const csv = expensesToCSV(expenses)
-    downloadCSV(`spend-o-meter-${month}.csv`, csv)
+    downloadCSV(`expend-${month}.csv`, csv)
   }
 
   return (
     <div className="space-y-3">
       <div className="rounded-block bg-cream p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Month over Month</p>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{activePeriod.heading}</p>
+          <div className="flex rounded-full bg-sage/40 p-0.5">
+            {PERIODS.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => onPeriodChange(p.key)}
+                className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                  p.key === period ? 'bg-forest text-cream' : 'text-muted'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
         {!loading && (
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">

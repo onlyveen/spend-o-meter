@@ -24,13 +24,20 @@ const TAB_TITLES = {
   dashboard: ['Track and Spend', 'Your Money'],
   expenses: ['All Recent', 'Transactions'],
   budget: ['Add your', 'Budget Category'],
-  summary: ['Compare your', 'Monthly Spend'],
+}
+
+const PERIOD_LABELS = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
 }
 
 export default function App() {
   const { user, loading, signOut, recovery, clearRecovery } = useAuth()
   const [tab, setTab] = useState('dashboard')
   const [month, setMonth] = useState(currentMonthStr())
+  const [period, setPeriod] = useState('monthly')
 
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
   const { budgets, saveBudgets } = useBudget(month, !loading && !!user)
@@ -49,7 +56,12 @@ export default function App() {
     return <Login />
   }
 
-  const title = tab === 'add' ? ['Quick', 'Add Expense'] : TAB_TITLES[tab]
+  const title =
+    tab === 'add'
+      ? ['Quick', 'Add Expense']
+      : tab === 'summary'
+        ? ['Compare your', `${PERIOD_LABELS[period]} Spend`]
+        : TAB_TITLES[tab]
   const displayName =
     user.user_metadata?.full_name ||
     user.user_metadata?.name ||
@@ -59,7 +71,10 @@ export default function App() {
     <div className="min-h-screen bg-sage">
       <div className="mx-auto w-full max-w-xl">
         <header className="flex items-center justify-between px-5 pt-6">
-          <p className="text-sm font-semibold text-ink">Hi, {displayName}</p>
+          <div className="flex items-center gap-2">
+            <img src="/images/icon.svg" alt="" className="h-7 w-7" />
+            <p className="text-sm font-semibold text-ink">Hi, {displayName}</p>
+          </div>
           <button
             onClick={signOut}
             aria-label="Sign out"
@@ -90,7 +105,9 @@ export default function App() {
             <ExpenseList expenses={expenses} onUpdate={updateExpense} onDelete={deleteExpense} />
           )}
           {tab === 'budget' && <BudgetSetup budgets={budgets} onSave={saveBudgets} />}
-          {tab === 'summary' && <MonthlySummary month={month} expenses={expenses} />}
+          {tab === 'summary' && (
+            <MonthlySummary month={month} expenses={expenses} period={period} onPeriodChange={setPeriod} />
+          )}
         </main>
       </div>
 

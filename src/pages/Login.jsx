@@ -55,6 +55,7 @@ export default function Login() {
           opacity={0.12}
           className="pointer-events-none absolute -right-14 -top-14"
         />
+        <img src="/images/logo_for_light_bg.svg" alt="Expend" className="relative mb-4 h-7 w-auto" />
         <h1 className="relative text-3xl font-bold leading-tight text-ink">
           <span className="text-muted">Track and Spend</span>
           <br />
