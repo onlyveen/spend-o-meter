@@ -7,6 +7,31 @@ export const CATEGORIES = [
   'Subscriptions',
   'Medical',
   'Misc',
+  // Family
+  'Home',
+  'Medicine',
+  'Spouse',
+  // Housing
+  'Rent',
+  'Electricity',
+  // Transport
+  'Two-Wheeler',
+  'Fuel',
+  'Parking',
+  // Investments (tracking only)
+  'SIP',
+  'Chit Fund',
+  'RD',
+  'Gold',
+  // Personal
+  'Clothing',
+  'Haircut/Grooming',
+  'Health/Gym',
+  'Church/Tithe',
+  // Travel
+  'Trips',
+  'Local Travel',
+  'Hotel/Stay',
 ]
 
 export const DEFAULT_BUDGETS = {
@@ -18,6 +43,25 @@ export const DEFAULT_BUDGETS = {
   Subscriptions: 4658,
   Medical: 2000,
   Misc: 5000,
+  Home: 0,
+  Medicine: 0,
+  Spouse: 0,
+  Rent: 0,
+  Electricity: 0,
+  'Two-Wheeler': 0,
+  Fuel: 0,
+  Parking: 0,
+  SIP: 0,
+  'Chit Fund': 0,
+  RD: 0,
+  Gold: 0,
+  Clothing: 0,
+  'Haircut/Grooming': 0,
+  'Health/Gym': 0,
+  'Church/Tithe': 0,
+  Trips: 0,
+  'Local Travel': 0,
+  'Hotel/Stay': 0,
 }
 
 export const PAYMENT_MODES = [
@@ -41,6 +85,25 @@ export const CATEGORY_COLORS = {
   Subscriptions: '#3D4836',
   Medical: '#E0C53D',
   Misc: '#6E7460',
+  Home: '#E0C53D',
+  Medicine: '#D9714B',
+  Spouse: '#3D4836',
+  Rent: '#9CA283',
+  Electricity: '#D9714B',
+  'Two-Wheeler': '#E0C53D',
+  Fuel: '#D9714B',
+  Parking: '#6E7460',
+  SIP: '#3D4836',
+  'Chit Fund': '#9CA283',
+  RD: '#E0C53D',
+  Gold: '#D9714B',
+  Clothing: '#3D4836',
+  'Haircut/Grooming': '#9CA283',
+  'Health/Gym': '#E0C53D',
+  'Church/Tithe': '#6E7460',
+  Trips: '#D9714B',
+  'Local Travel': '#3D4836',
+  'Hotel/Stay': '#9CA283',
 }
 
 export const CATEGORY_ICONS = {
@@ -52,6 +115,25 @@ export const CATEGORY_ICONS = {
   Subscriptions: '🔁',
   Medical: '⚕️',
   Misc: '✦',
+  Home: '🏠',
+  Medicine: '🩺',
+  Spouse: '💍',
+  Rent: '🏢',
+  Electricity: '💡',
+  'Two-Wheeler': '🛵',
+  Fuel: '⛽',
+  Parking: '🅿️',
+  SIP: '📈',
+  'Chit Fund': '🤝',
+  RD: '🏦',
+  Gold: '🪙',
+  Clothing: '👕',
+  'Haircut/Grooming': '💇',
+  'Health/Gym': '💪',
+  'Church/Tithe': '🙏',
+  Trips: '✈️',
+  'Local Travel': '🚗',
+  'Hotel/Stay': '🏨',
 }
 
 export const PAYMENT_MODE_COLORS = {

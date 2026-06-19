@@ -40,7 +40,7 @@ export default function App() {
   const { user, loading, signOut, recovery, clearRecovery } = useAuth()
   const [tab, setTab] = useState('dashboard')
   const [month, setMonth] = useState(currentMonthStr())
-  const [period, setPeriod] = useState('monthly')
+  const [period, setPeriod] = useState('daily')
   const [showSplash, setShowSplash] = useState(true)
   const updateAvailable = useAppUpdate()
   const touchStartRef = useRef(null)

@@ -6,15 +6,14 @@ import { expensesToCSV, downloadCSV } from '../lib/csv'
 import { CATEGORY_ICONS } from '../lib/constants'
 
 const PERIODS = [
-  { key: 'daily', label: 'Daily', heading: 'Day over Day' },
-  { key: 'weekly', label: 'Weekly', heading: 'Week over Week' },
-  { key: 'monthly', label: 'Monthly', heading: 'Month over Month' },
-  { key: 'yearly', label: 'Yearly', heading: 'Year over Year' },
+  { key: 'daily', label: 'Daily' },
+  { key: 'weekly', label: 'Weekly' },
+  { key: 'monthly', label: 'Monthly' },
+  { key: 'yearly', label: 'Yearly' },
 ]
 
 export default function MonthlySummary({ month, expenses, period, onPeriodChange }) {
   const { history, loading } = useSpendHistory(month, period)
-  const activePeriod = PERIODS.find((p) => p.key === period) ?? PERIODS[2]
 
   const chartData = useMemo(() => history.map((h) => ({ label: h.label, total: h.total })), [history])
 
@@ -41,14 +40,13 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
 
   function handleExport() {
     const csv = expensesToCSV(expenses)
-    downloadCSV(`expend-${month}.csv`, csv)
+    downloadCSV(`spendid-${month}.csv`, csv)
   }
 
   return (
     <div className="space-y-3">
       <div className="rounded-block bg-cream p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{activePeriod.heading}</p>
+        <div className="mb-3 flex items-center justify-end">
           <div className="flex rounded-full bg-sage/40 p-0.5">
             {PERIODS.map((p) => (
               <button

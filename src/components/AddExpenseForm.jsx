@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { CATEGORIES, PAYMENT_MODES, CATEGORY_ICONS } from '../lib/constants'
+import { CATEGORIES, PAYMENT_MODES } from '../lib/constants'
 import { todayISO } from '../lib/format'
+import CategorySelect from './CategorySelect'
 
 const emptyForm = {
   date: todayISO(),
@@ -80,21 +81,7 @@ export default function AddExpenseForm({ onAdd }) {
 
       <div>
         <label className="mb-1 block text-xs text-muted">Category</label>
-        <div className="grid grid-cols-4 gap-2">
-          {CATEGORIES.map((c) => (
-            <button
-              type="button"
-              key={c}
-              onClick={() => update('category', c)}
-              className={`flex flex-col items-center gap-1 rounded-block py-2 text-[10px] font-medium ${
-                form.category === c ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
-              }`}
-            >
-              <span className="text-base">{CATEGORY_ICONS[c]}</span>
-              {c}
-            </button>
-          ))}
-        </div>
+        <CategorySelect value={form.category} onChange={(c) => update('category', c)} placeholder="Select category" />
       </div>
 
       <div>

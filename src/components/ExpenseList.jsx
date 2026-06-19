@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { CATEGORIES, PAYMENT_MODES, PAYMENT_MODE_LABELS, CATEGORY_ICONS } from '../lib/constants'
+import { PAYMENT_MODES, PAYMENT_MODE_LABELS, CATEGORY_ICONS } from '../lib/constants'
 import { formatDateDDMMYYYY, formatINR, todayISO } from '../lib/format'
+import CategorySelect from './CategorySelect'
 
 const selectClass = 'flex-1 rounded-block bg-cream px-2 py-2 text-sm text-ink outline-none'
 const fieldClass = 'rounded-block bg-sage/40 px-2 py-1.5 text-sm text-ink outline-none'
@@ -43,14 +44,7 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={selectClass}>
-          <option value="">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        <CategorySelect value={categoryFilter} onChange={setCategoryFilter} className="flex-1" />
         <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className={selectClass}>
           <option value="">All payment modes</option>
           {PAYMENT_MODES.map((p) => (
@@ -85,17 +79,11 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <select
+                  <CategorySelect
                     value={editForm.category}
-                    onChange={(e) => setEditForm((f) => ({ ...f, category: e.target.value }))}
-                    className={fieldClass}
-                  >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(c) => setEditForm((f) => ({ ...f, category: c }))}
+                    placeholder="Select category"
+                  />
                   <select
                     value={editForm.payment_mode}
                     onChange={(e) => setEditForm((f) => ({ ...f, payment_mode: e.target.value }))}
