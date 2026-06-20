@@ -34,13 +34,27 @@ export const CATEGORIES = [
   'Hotel/Stay',
 ]
 
+// Categories whose limit is set as an annual amount (e.g. one trip budget for
+// the year) rather than a fixed monthly one. The stored `monthly_limit` value
+// holds the annual figure for these; everywhere else divides by 12 to get a
+// comparable monthly number.
+export const YEARLY_CATEGORIES = ['Subscriptions', 'Health/Gym', 'Trips']
+
+export const isYearlyCategory = (category) => YEARLY_CATEGORIES.includes(category)
+
+// Categories that represent saving/investing rather than spending — excluded
+// from budget totals and "over budget" calculations.
+export const SAVINGS_CATEGORIES = ['SIP', 'Chit Fund', 'RD', 'Gold']
+
+export const isSavingsCategory = (category) => SAVINGS_CATEGORIES.includes(category)
+
 export const DEFAULT_BUDGETS = {
   Groceries: 8000,
   'Eating Out': 5000,
   Shopping: 10000,
   Cabs: 2500,
   Baby: 5000,
-  Subscriptions: 4658,
+  Subscriptions: 55896, // yearly
   Medical: 2000,
   Misc: 5000,
   Home: 0,

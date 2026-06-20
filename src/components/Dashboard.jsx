@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { formatINR } from '../lib/format'
-import { CATEGORY_ICONS } from '../lib/constants'
+import { CATEGORY_ICONS, isYearlyCategory, isSavingsCategory } from '../lib/constants'
 import Sunburst from './Sunburst'
 
 const BLOCK_STYLES = [
@@ -8,10 +8,21 @@ const BLOCK_STYLES = [
   { bg: 'bg-sage-dark', text: 'text-ink', muted: 'text-ink/60' },
 ]
 
+function monthlyLimit(b) {
+  const value = Number(b.monthly_limit)
+  return isYearlyCategory(b.category) ? value / 12 : value
+}
+
 export default function Dashboard({ expenses, budgets }) {
   const [showCategories, setShowCategories] = useState(false)
-  const totalBudget = useMemo(() => budgets.reduce((sum, b) => sum + Number(b.monthly_limit), 0), [budgets])
-  const totalSpent = useMemo(() => expenses.reduce((sum, e) => sum + Number(e.amount), 0), [expenses])
+  const totalBudget = useMemo(
+    () => budgets.filter((b) => !isSavingsCategory(b.category)).reduce((sum, b) => sum + monthlyLimit(b), 0),
+    [budgets]
+  )
+  const totalSpent = useMemo(
+    () => expenses.filter((e) => !isSavingsCategory(e.category)).reduce((sum, e) => sum + Number(e.amount), 0),
+    [expenses]
+  )
 
   const byCategory = useMemo(() => {
     const map = {}
@@ -22,7 +33,9 @@ export default function Dashboard({ expenses, budgets }) {
       .map((b) => ({
         category: b.category,
         spent: map[b.category] || 0,
-        limit: Number(b.monthly_limit),
+        limit: monthlyLimit(b),
+        yearlyLimit: isYearlyCategory(b.category) ? Number(b.monthly_limit) : null,
+        savings: isSavingsCategory(b.category),
       }))
       .sort((a, b) => b.spent - a.spent)
   }, [expenses, budgets])
@@ -51,8 +64,8 @@ export default function Dashboard({ expenses, budgets }) {
               {remaining < 0 ? `Over by ${formatINR(-remaining)}` : `${formatINR(remaining)} left`}
             </span>
           </div>
-          <p className="mt-2 text-center text-[10px] uppercase tracking-wide text-muted">
-            {showCategories ? 'Tap to hide categories ▲' : 'Tap to view categories ▼'}
+          <p className="mt-5 text-center text-[10px] uppercase tracking-wide text-muted">
+            {showCategories ? 'Hide Categories ▲' : 'View Categories ▼'}
           </p>
         </div>
       </button>
@@ -61,7 +74,7 @@ export default function Dashboard({ expenses, budgets }) {
         <div className="max-h-80 overflow-y-auto overscroll-contain rounded-block border-2 border-forest">
           {byCategory.map((c, i) => {
             const style = BLOCK_STYLES[i % BLOCK_STYLES.length]
-            const over = c.spent > c.limit
+            const over = !c.savings && c.spent > c.limit
             return (
               <div
                 key={c.category}
@@ -71,10 +84,16 @@ export default function Dashboard({ expenses, budgets }) {
                   <span className="text-lg">{CATEGORY_ICONS[c.category]}</span>
                   <p className={`text-sm font-semibold ${style.text}`}>{c.category}</p>
                   {over && <span className="text-[9px] font-semibold text-forest-dark">OVER</span>}
+                  {c.savings && <span className="text-[9px] font-semibold uppercase opacity-60">Tracking only</span>}
                 </div>
                 <div className="text-right">
                   <p className={`text-sm font-bold leading-tight ${style.text}`}>{formatINR(c.spent)}</p>
-                  <p className={`text-[10px] ${style.muted}`}>of {formatINR(c.limit)}</p>
+                  {!c.savings && (
+                    <p className={`text-[10px] ${style.muted}`}>
+                      of {formatINR(c.limit)}
+                      {c.yearlyLimit != null && ` (${formatINR(c.yearlyLimit)}/yr)`}
+                    </p>
+                  )}
                 </div>
               </div>
             )
