@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
-import { CATEGORIES, DEFAULT_BUDGETS } from './constants'
 
-export function useBudget(month, ready = true) {
+export function useBudget(month, categories, ready = true) {
   const [budgets, setBudgets] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -19,16 +18,16 @@ export function useBudget(month, ready = true) {
     }
 
     const byCategory = Object.fromEntries((data ?? []).map((b) => [b.category, b]))
-    const merged = CATEGORIES.map((category) => ({
-      id: byCategory[category]?.id ?? null,
-      category,
+    const merged = categories.map((cat) => ({
+      id: byCategory[cat.name]?.id ?? null,
+      category: cat.name,
       month,
-      monthly_limit: byCategory[category]?.monthly_limit ?? DEFAULT_BUDGETS[category],
+      monthly_limit: byCategory[cat.name]?.monthly_limit ?? cat.default_limit,
     }))
 
     setBudgets(merged)
     setLoading(false)
-  }, [month])
+  }, [month, categories])
 
   useEffect(() => {
     if (ready) fetchBudget()

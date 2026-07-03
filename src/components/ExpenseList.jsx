@@ -1,16 +1,17 @@
 import { useMemo, useState } from 'react'
-import { PAYMENT_MODES, PAYMENT_MODE_LABELS, CATEGORY_ICONS } from '../lib/constants'
+import { PAYMENT_MODES, PAYMENT_MODE_LABELS } from '../lib/constants'
 import { formatDateDDMMYYYY, formatINR, todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
 
 const selectClass = 'flex-1 rounded-block bg-cream px-2 py-2 text-sm text-ink outline-none'
 const fieldClass = 'rounded-block bg-sage/40 px-2 py-1.5 text-sm text-ink outline-none'
 
-export default function ExpenseList({ expenses, onUpdate, onDelete }) {
+export default function ExpenseList({ expenses, onUpdate, onDelete, categories }) {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [paymentFilter, setPaymentFilter] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState(null)
+  const iconByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c.icon])), [categories])
 
   const filtered = useMemo(() => {
     return expenses.filter((e) => {
@@ -44,7 +45,7 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <CategorySelect value={categoryFilter} onChange={setCategoryFilter} className="flex-1" />
+        <CategorySelect value={categoryFilter} onChange={setCategoryFilter} categories={categories} className="flex-1" />
         <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className={selectClass}>
           <option value="">All payment modes</option>
           {PAYMENT_MODES.map((p) => (
@@ -82,6 +83,7 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
                   <CategorySelect
                     value={editForm.category}
                     onChange={(c) => setEditForm((f) => ({ ...f, category: c }))}
+                    categories={categories}
                     placeholder="Select category"
                   />
                   <select
@@ -121,14 +123,13 @@ export default function ExpenseList({ expenses, onUpdate, onDelete }) {
             ) : (
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-block bg-forest text-lg text-cream">
-                  {CATEGORY_ICONS[expense.category]}
+                  {iconByName[expense.category]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-ink">{expense.category}</p>
-                  <p className="truncate text-xs uppercase tracking-wide text-muted">
-                    {PAYMENT_MODE_LABELS[expense.payment_mode]}
-                    {expense.description ? ` · ${expense.description}` : ''}
+                  <p className="truncate font-medium text-ink">
+                    {expense.description ? expense.description : ''}
                   </p>
+                  <p className="truncate text-xs uppercase tracking-wide text-muted">{expense.category} <small>({PAYMENT_MODE_LABELS[expense.payment_mode]})</small></p>
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-ink">{formatINR(expense.amount)}</p>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from './lib/AuthContext'
 import { useExpenses } from './lib/useExpenses'
+import { useCategories } from './lib/useCategories'
 import { useBudget } from './lib/useBudget'
 import { useAppUpdate } from './lib/useAppUpdate'
 import { currentMonthStr } from './lib/format'
@@ -46,7 +47,8 @@ export default function App() {
   const touchStartRef = useRef(null)
 
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
-  const { budgets, saveBudgets } = useBudget(month, !loading && !!user)
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories(!loading && !!user)
+  const { budgets, saveBudgets } = useBudget(month, categories, !loading && !!user && categories.length > 0)
 
   useEffect(() => {
     const t = setTimeout(() => setShowSplash(false), 1000)
@@ -148,14 +150,34 @@ export default function App() {
         >
           <MonthSwitcher month={month} onChange={setMonth} />
 
-          {tab === 'dashboard' && <Dashboard expenses={expenses} budgets={budgets} />}
-          {tab === 'add' && <AddExpenseForm onAdd={addExpense} />}
+          {tab === 'dashboard' && <Dashboard expenses={expenses} budgets={budgets} categories={categories} />}
+          {tab === 'add' && <AddExpenseForm onAdd={addExpense} categories={categories} />}
           {tab === 'expenses' && (
-            <ExpenseList expenses={expenses} onUpdate={updateExpense} onDelete={deleteExpense} />
+            <ExpenseList
+              expenses={expenses}
+              onUpdate={updateExpense}
+              onDelete={deleteExpense}
+              categories={categories}
+            />
           )}
-          {tab === 'budget' && <BudgetSetup budgets={budgets} onSave={saveBudgets} />}
+          {tab === 'budget' && (
+            <BudgetSetup
+              budgets={budgets}
+              onSave={saveBudgets}
+              categories={categories}
+              onAddCategory={addCategory}
+              onUpdateCategory={updateCategory}
+              onDeleteCategory={deleteCategory}
+            />
+          )}
           {tab === 'summary' && (
-            <MonthlySummary month={month} expenses={expenses} period={period} onPeriodChange={setPeriod} />
+            <MonthlySummary
+              month={month}
+              expenses={expenses}
+              period={period}
+              onPeriodChange={setPeriod}
+              categories={categories}
+            />
           )}
         </main>
       </div>

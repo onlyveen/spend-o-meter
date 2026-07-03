@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { CATEGORIES, CATEGORY_ICONS } from '../lib/constants'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-export default function CategorySelect({ value, onChange, categories = CATEGORIES, placeholder = 'All categories', className = '' }) {
+export default function CategorySelect({ value, onChange, categories, placeholder = 'All categories', className = '' }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const rootRef = useRef(null)
   const inputRef = useRef(null)
+  const iconByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c.icon])), [categories])
 
   useEffect(() => {
     function onClickOutside(e) {
@@ -22,7 +22,7 @@ export default function CategorySelect({ value, onChange, categories = CATEGORIE
     if (open) inputRef.current?.focus()
   }, [open])
 
-  const filtered = categories.filter((c) => c.toLowerCase().includes(query.toLowerCase()))
+  const filtered = categories.filter((c) => c.name.toLowerCase().includes(query.toLowerCase()))
 
   function select(category) {
     onChange(category)
@@ -39,7 +39,7 @@ export default function CategorySelect({ value, onChange, categories = CATEGORIE
       >
         {value ? (
           <>
-            <span>{CATEGORY_ICONS[value]}</span>
+            <span>{iconByName[value]}</span>
             <span className="truncate">{value}</span>
           </>
         ) : (
@@ -73,14 +73,14 @@ export default function CategorySelect({ value, onChange, categories = CATEGORIE
             {filtered.map((c) => (
               <button
                 type="button"
-                key={c}
-                onClick={() => select(c)}
+                key={c.id}
+                onClick={() => select(c.name)}
                 className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${
-                  value === c ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
+                  value === c.name ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
                 }`}
               >
-                <span>{CATEGORY_ICONS[c]}</span>
-                <span className="truncate">{c}</span>
+                <span>{c.icon}</span>
+                <span className="truncate">{c.name}</span>
               </button>
             ))}
           </div>

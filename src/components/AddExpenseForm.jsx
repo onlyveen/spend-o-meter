@@ -1,20 +1,19 @@
 import { useState } from 'react'
-import { CATEGORIES, PAYMENT_MODES } from '../lib/constants'
+import { PAYMENT_MODES } from '../lib/constants'
 import { todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
 
-const emptyForm = {
-  date: todayISO(),
-  amount: '',
-  category: CATEGORIES[0],
-  payment_mode: 'upi',
-  description: '',
-}
-
 const fieldClass =
-  'w-full rounded-block border-none bg-sage/40 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
+  'w-full rounded-block border-none bg-sage/40 px-3 py-2.5 h-10 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
 
-export default function AddExpenseForm({ onAdd }) {
+export default function AddExpenseForm({ onAdd, categories }) {
+  const emptyForm = {
+    date: todayISO(),
+    amount: '',
+    category: categories[0]?.name ?? '',
+    payment_mode: 'upi',
+    description: '',
+  }
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -81,7 +80,12 @@ export default function AddExpenseForm({ onAdd }) {
 
       <div>
         <label className="mb-1 block text-xs text-muted">Category</label>
-        <CategorySelect value={form.category} onChange={(c) => update('category', c)} placeholder="Select category" />
+        <CategorySelect
+          value={form.category}
+          onChange={(c) => update('category', c)}
+          categories={categories}
+          placeholder="Select category"
+        />
       </div>
 
       <div>
@@ -92,9 +96,8 @@ export default function AddExpenseForm({ onAdd }) {
               type="button"
               key={p.value}
               onClick={() => update('payment_mode', p.value)}
-              className={`rounded-block py-2 text-[11px] font-medium ${
-                form.payment_mode === p.value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
-              }`}
+              className={`rounded-block py-2 text-[11px] font-medium ${form.payment_mode === p.value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
+                }`}
             >
               {p.label}
             </button>

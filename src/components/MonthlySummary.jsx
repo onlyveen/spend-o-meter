@@ -3,7 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useSpendHistory } from '../lib/useSpendHistory'
 import { formatINR } from '../lib/format'
 import { expensesToCSV, downloadCSV } from '../lib/csv'
-import { CATEGORY_ICONS } from '../lib/constants'
 
 const PERIODS = [
   { key: 'daily', label: 'Daily' },
@@ -12,8 +11,9 @@ const PERIODS = [
   { key: 'yearly', label: 'Yearly' },
 ]
 
-export default function MonthlySummary({ month, expenses, period, onPeriodChange }) {
+export default function MonthlySummary({ month, expenses, period, onPeriodChange, categories }) {
   const { history, loading } = useSpendHistory(month, period)
+  const iconByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c.icon])), [categories])
 
   const chartData = useMemo(() => history.map((h) => ({ label: h.label, total: h.total })), [history])
 
@@ -88,7 +88,7 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
               className={`flex items-center justify-between px-4 py-3 ${i > 0 ? 'border-t border-sage/40' : ''}`}
             >
               <div className="flex items-center gap-2">
-                <span>{CATEGORY_ICONS[category]}</span>
+                <span>{iconByName[category]}</span>
                 <span className="text-sm text-ink">{category}</span>
               </div>
               <span className="font-semibold text-ink">{formatINR(amount)}</span>

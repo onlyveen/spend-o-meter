@@ -48,12 +48,34 @@ create table if not exists budget (
 create index if not exists budget_user_month_idx on budget (user_id, month);
 
 -- ============================================================
+-- Table: categories
+-- User-managed spending categories. `name` is plain text (not a
+-- foreign key target) so renaming/deleting never breaks existing
+-- expenses/budget rows, which also just store category as text.
+-- ============================================================
+create table if not exists categories (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
+  name text not null,
+  icon text not null default '✦',
+  period text not null default 'monthly' check (period in ('monthly', 'yearly')),
+  is_savings boolean not null default false,
+  default_limit numeric(12, 2) not null default 0,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  unique (user_id, name)
+);
+
+create index if not exists categories_user_sort_idx on categories (user_id, sort_order);
+
+-- ============================================================
 -- Row Level Security
 -- This is a single-user app per Supabase project, but RLS still
 -- scopes every row to the authenticated user for safety.
 -- ============================================================
 alter table expenses enable row level security;
 alter table budget enable row level security;
+alter table categories enable row level security;
 
 drop policy if exists "Users can manage their own expenses" on expenses;
 create policy "Users can manage their own expenses"
@@ -64,6 +86,12 @@ create policy "Users can manage their own expenses"
 drop policy if exists "Users can manage their own budget" on budget;
 create policy "Users can manage their own budget"
   on budget for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Users can manage their own categories" on categories;
+create policy "Users can manage their own categories"
+  on categories for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 

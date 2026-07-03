@@ -1,82 +1,34 @@
-export const CATEGORIES = [
-  'Groceries',
-  'Eating Out',
-  'Shopping',
-  'Cabs',
-  'Baby',
-  'Subscriptions',
-  'Medical',
-  'Misc',
-  // Family
-  'Home',
-  'Medicine',
-  'Spouse',
-  // Housing
-  'Rent',
-  'Electricity',
-  // Transport
-  'Two-Wheeler',
-  'Fuel',
-  'Parking',
-  // Investments (tracking only)
-  'SIP',
-  'Chit Fund',
-  'RD',
-  'Gold',
-  // Personal
-  'Clothing',
-  'Haircut/Grooming',
-  'Health/Gym',
-  'Church/Tithe',
-  // Travel
-  'Trips',
-  'Local Travel',
-  'Hotel/Stay',
+// One-time seed used to populate a new user's `categories` table on first
+// login. After that, categories are fully user-managed (see useCategories).
+export const DEFAULT_CATEGORIES = [
+  { name: 'Groceries', icon: '🛒', period: 'monthly', is_savings: false, default_limit: 8000 },
+  { name: 'Eating Out', icon: '🍔', period: 'monthly', is_savings: false, default_limit: 5000 },
+  { name: 'Shopping', icon: '🛍️', period: 'monthly', is_savings: false, default_limit: 10000 },
+  { name: 'Cabs', icon: '🚕', period: 'monthly', is_savings: false, default_limit: 2500 },
+  { name: 'Baby', icon: '🍼', period: 'monthly', is_savings: false, default_limit: 5000 },
+  { name: 'Subscriptions', icon: '🔁', period: 'yearly', is_savings: false, default_limit: 55896 },
+  { name: 'Medical', icon: '⚕️', period: 'monthly', is_savings: false, default_limit: 2000 },
+  { name: 'Misc', icon: '✦', period: 'monthly', is_savings: false, default_limit: 5000 },
+  { name: 'Home', icon: '🏠', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Medicine', icon: '🩺', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Spouse', icon: '💍', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Rent', icon: '🏢', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Electricity', icon: '💡', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Two-Wheeler', icon: '🛵', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Fuel', icon: '⛽', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Parking', icon: '🅿️', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'SIP', icon: '📈', period: 'monthly', is_savings: true, default_limit: 0 },
+  { name: 'Chit Fund', icon: '🤝', period: 'monthly', is_savings: true, default_limit: 0 },
+  { name: 'RD', icon: '🏦', period: 'monthly', is_savings: true, default_limit: 0 },
+  { name: 'Gold', icon: '🪙', period: 'monthly', is_savings: true, default_limit: 0 },
+  { name: 'Clothing', icon: '👕', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Haircut/Grooming', icon: '💇', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Health/Gym', icon: '💪', period: 'yearly', is_savings: false, default_limit: 0 },
+  { name: 'Church/Tithe', icon: '🙏', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Trips', icon: '✈️', period: 'yearly', is_savings: false, default_limit: 0 },
+  { name: 'Local Travel', icon: '🚗', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'Hotel/Stay', icon: '🏨', period: 'monthly', is_savings: false, default_limit: 0 },
 ]
-
-// Categories whose limit is set as an annual amount (e.g. one trip budget for
-// the year) rather than a fixed monthly one. The stored `monthly_limit` value
-// holds the annual figure for these; everywhere else divides by 12 to get a
-// comparable monthly number.
-export const YEARLY_CATEGORIES = ['Subscriptions', 'Health/Gym', 'Trips']
-
-export const isYearlyCategory = (category) => YEARLY_CATEGORIES.includes(category)
-
-// Categories that represent saving/investing rather than spending — excluded
-// from budget totals and "over budget" calculations.
-export const SAVINGS_CATEGORIES = ['SIP', 'Chit Fund', 'RD', 'Gold']
-
-export const isSavingsCategory = (category) => SAVINGS_CATEGORIES.includes(category)
-
-export const DEFAULT_BUDGETS = {
-  Groceries: 8000,
-  'Eating Out': 5000,
-  Shopping: 10000,
-  Cabs: 2500,
-  Baby: 5000,
-  Subscriptions: 55896, // yearly
-  Medical: 2000,
-  Misc: 5000,
-  Home: 0,
-  Medicine: 0,
-  Spouse: 0,
-  Rent: 0,
-  Electricity: 0,
-  'Two-Wheeler': 0,
-  Fuel: 0,
-  Parking: 0,
-  SIP: 0,
-  'Chit Fund': 0,
-  RD: 0,
-  Gold: 0,
-  Clothing: 0,
-  'Haircut/Grooming': 0,
-  'Health/Gym': 0,
-  'Church/Tithe': 0,
-  Trips: 0,
-  'Local Travel': 0,
-  'Hotel/Stay': 0,
-}
 
 export const PAYMENT_MODES = [
   { value: 'cash', label: 'Cash' },
@@ -89,66 +41,6 @@ export const PAYMENT_MODE_LABELS = PAYMENT_MODES.reduce((acc, p) => {
   acc[p.value] = p.label
   return acc
 }, {})
-
-export const CATEGORY_COLORS = {
-  Groceries: '#E0C53D',
-  'Eating Out': '#D9714B',
-  Shopping: '#3D4836',
-  Cabs: '#9CA283',
-  Baby: '#D9714B',
-  Subscriptions: '#3D4836',
-  Medical: '#E0C53D',
-  Misc: '#6E7460',
-  Home: '#E0C53D',
-  Medicine: '#D9714B',
-  Spouse: '#3D4836',
-  Rent: '#9CA283',
-  Electricity: '#D9714B',
-  'Two-Wheeler': '#E0C53D',
-  Fuel: '#D9714B',
-  Parking: '#6E7460',
-  SIP: '#3D4836',
-  'Chit Fund': '#9CA283',
-  RD: '#E0C53D',
-  Gold: '#D9714B',
-  Clothing: '#3D4836',
-  'Haircut/Grooming': '#9CA283',
-  'Health/Gym': '#E0C53D',
-  'Church/Tithe': '#6E7460',
-  Trips: '#D9714B',
-  'Local Travel': '#3D4836',
-  'Hotel/Stay': '#9CA283',
-}
-
-export const CATEGORY_ICONS = {
-  Groceries: '🛒',
-  'Eating Out': '🍔',
-  Shopping: '🛍️',
-  Cabs: '🚕',
-  Baby: '🍼',
-  Subscriptions: '🔁',
-  Medical: '⚕️',
-  Misc: '✦',
-  Home: '🏠',
-  Medicine: '🩺',
-  Spouse: '💍',
-  Rent: '🏢',
-  Electricity: '💡',
-  'Two-Wheeler': '🛵',
-  Fuel: '⛽',
-  Parking: '🅿️',
-  SIP: '📈',
-  'Chit Fund': '🤝',
-  RD: '🏦',
-  Gold: '🪙',
-  Clothing: '👕',
-  'Haircut/Grooming': '💇',
-  'Health/Gym': '💪',
-  'Church/Tithe': '🙏',
-  Trips: '✈️',
-  'Local Travel': '🚗',
-  'Hotel/Stay': '🏨',
-}
 
 export const PAYMENT_MODE_COLORS = {
   cash: '#9CA283',
