@@ -42,6 +42,13 @@ export const PAYMENT_MODE_LABELS = PAYMENT_MODES.reduce((acc, p) => {
   return acc
 }, {})
 
+export const PAYMENT_MODE_ICONS = {
+  cash: '💵',
+  credit_card: '💳',
+  upi: '📱',
+  debit_card: '🏧',
+}
+
 export const PAYMENT_MODE_COLORS = {
   cash: '#9CA283',
   credit_card: '#3D4836',

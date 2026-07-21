@@ -42,6 +42,9 @@ export default function App() {
   const [tab, setTab] = useState('dashboard')
   const [month, setMonth] = useState(currentMonthStr())
   const [period, setPeriod] = useState('daily')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [paymentFilter, setPaymentFilter] = useState('')
+  const [editingCategories, setEditingCategories] = useState(false)
   const [showSplash, setShowSplash] = useState(true)
   const updateAvailable = useAppUpdate()
   const touchStartRef = useRef(null)
@@ -144,11 +147,23 @@ export default function App() {
         </div>
 
         <main
-          className="w-full space-y-3 px-5 pt-6 pb-28 md:pb-40"
+          className={`w-full space-y-3 px-5 pt-6 ${tab === 'budget' ? 'pb-44 md:pb-56' : 'pb-28 md:pb-40'}`}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <MonthSwitcher month={month} onChange={setMonth} />
+          <MonthSwitcher
+            month={month}
+            onChange={setMonth}
+            showFilters={tab === 'expenses'}
+            categories={categories}
+            categoryFilter={categoryFilter}
+            onCategoryFilterChange={setCategoryFilter}
+            paymentFilter={paymentFilter}
+            onPaymentFilterChange={setPaymentFilter}
+            showEditCategories={tab === 'budget'}
+            editingCategories={editingCategories}
+            onToggleEditCategories={() => setEditingCategories((v) => !v)}
+          />
 
           {tab === 'dashboard' && <Dashboard expenses={expenses} budgets={budgets} categories={categories} />}
           {tab === 'add' && <AddExpenseForm onAdd={addExpense} categories={categories} />}
@@ -158,6 +173,8 @@ export default function App() {
               onUpdate={updateExpense}
               onDelete={deleteExpense}
               categories={categories}
+              categoryFilter={categoryFilter}
+              paymentFilter={paymentFilter}
             />
           )}
           {tab === 'budget' && (
@@ -168,6 +185,7 @@ export default function App() {
               onAddCategory={addCategory}
               onUpdateCategory={updateCategory}
               onDeleteCategory={deleteCategory}
+              editing={editingCategories}
             />
           )}
           {tab === 'summary' && (

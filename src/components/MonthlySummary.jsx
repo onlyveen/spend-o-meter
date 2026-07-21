@@ -22,9 +22,7 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
     for (const e of expenses) {
       map[e.category] = (map[e.category] || 0) + Number(e.amount)
     }
-    return Object.entries(map)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 5)
+    return Object.entries(map).sort(([, a], [, b]) => b - a)
   }, [expenses])
 
   const cashVsCard = useMemo(() => {
@@ -77,7 +75,7 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
       </div>
 
       <div className="overflow-hidden rounded-block bg-cream">
-        <p className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-muted">Biggest Spend Categories</p>
+        <p className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-muted">Spend by Category</p>
         <div className="mt-2">
           {biggestCategories.length === 0 && (
             <p className="px-4 pb-4 text-sm text-muted">No expenses this month.</p>
