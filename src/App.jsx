@@ -154,6 +154,7 @@ export default function App() {
           <MonthSwitcher
             month={month}
             onChange={setMonth}
+            bare={tab === 'dashboard'}
             showFilters={tab === 'expenses'}
             categories={categories}
             categoryFilter={categoryFilter}

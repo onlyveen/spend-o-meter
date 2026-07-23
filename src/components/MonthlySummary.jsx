@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useSpendHistory } from '../lib/useSpendHistory'
 import { formatINR } from '../lib/format'
@@ -13,7 +13,9 @@ const PERIODS = [
 
 export default function MonthlySummary({ month, expenses, period, onPeriodChange, categories }) {
   const { history, loading } = useSpendHistory(month, period)
+  const [categoryTab, setCategoryTab] = useState('expense')
   const iconByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c.icon])), [categories])
+  const catByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c])), [categories])
 
   const chartData = useMemo(() => history.map((h) => ({ label: h.label, total: h.total })), [history])
 
@@ -24,6 +26,16 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
     }
     return Object.entries(map).sort(([, a], [, b]) => b - a)
   }, [expenses])
+
+  const expenseCategories = useMemo(
+    () => biggestCategories.filter(([category]) => !catByName[category]?.is_savings),
+    [biggestCategories, catByName]
+  )
+  const savingsCategories = useMemo(
+    () => biggestCategories.filter(([category]) => catByName[category]?.is_savings),
+    [biggestCategories, catByName]
+  )
+  const activeCategories = categoryTab === 'savings' ? savingsCategories : expenseCategories
 
   const cashVsCard = useMemo(() => {
     const map = { cash: 0, credit_card: 0, debit_card: 0, upi: 0 }
@@ -74,22 +86,39 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
         )}
       </div>
 
-      <div className="overflow-hidden rounded-block bg-cream">
-        <p className="px-4 pt-4 text-xs font-semibold uppercase tracking-wide text-muted">Spend by Category</p>
-        <div className="mt-2">
-          {biggestCategories.length === 0 && (
-            <p className="px-4 pb-4 text-sm text-muted">No expenses this month.</p>
-          )}
-          {biggestCategories.map(([category, amount], i) => (
-            <div
-              key={category}
-              className={`flex items-center justify-between px-4 py-3 ${i > 0 ? 'border-t border-sage/40' : ''}`}
+      <div className="rounded-block bg-cream p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">Spend by Category</p>
+          <div className="flex rounded-full bg-sage/40 p-0.5">
+            <button
+              type="button"
+              onClick={() => setCategoryTab('expense')}
+              className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                categoryTab === 'expense' ? 'bg-forest text-cream' : 'text-muted'
+              }`}
             >
-              <div className="flex items-center gap-2">
-                <span>{iconByName[category]}</span>
-                <span className="text-sm text-ink">{category}</span>
-              </div>
-              <span className="font-semibold text-ink">{formatINR(amount)}</span>
+              Expense
+            </button>
+            <button
+              type="button"
+              onClick={() => setCategoryTab('savings')}
+              className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                categoryTab === 'savings' ? 'bg-forest text-cream' : 'text-muted'
+              }`}
+            >
+              Savings
+            </button>
+          </div>
+        </div>
+        {activeCategories.length === 0 && (
+          <p className="text-sm text-muted">No {categoryTab} categories.</p>
+        )}
+        <div className="grid grid-cols-4 gap-2">
+          {activeCategories.map(([category, amount]) => (
+            <div key={category} className="flex flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center">
+              <span className="text-lg">{iconByName[category]}</span>
+              <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink">{category}</span>
+              <span className="text-xs font-bold text-ink">{formatINR(amount)}</span>
             </div>
           ))}
         </div>

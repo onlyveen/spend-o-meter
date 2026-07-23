@@ -1,14 +1,10 @@
 import { useMemo, useState } from 'react'
-import { formatINR } from '../lib/format'
+import { formatDateDDMMYYYY, formatINR } from '../lib/format'
 import Sunburst from './Sunburst'
 
-const BLOCK_STYLES = [
-  { bg: 'bg-sage', text: 'text-ink', muted: 'text-ink/60' },
-  { bg: 'bg-sage-dark', text: 'text-ink', muted: 'text-ink/60' },
-]
-
 export default function Dashboard({ expenses, budgets, categories }) {
-  const [showCategories, setShowCategories] = useState(false)
+  const [selectedTab, setSelectedTab] = useState('expenses')
+  const [expanded, setExpanded] = useState(false)
   const catByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c])), [categories])
 
   function monthlyLimit(b) {
@@ -20,10 +16,12 @@ export default function Dashboard({ expenses, budgets, categories }) {
     () => budgets.filter((b) => !catByName[b.category]?.is_savings).reduce((sum, b) => sum + monthlyLimit(b), 0),
     [budgets, catByName]
   )
-  const totalSpent = useMemo(
+  const totalSpent = useMemo(() => expenses.reduce((sum, e) => sum + Number(e.amount), 0), [expenses])
+  const spendOnly = useMemo(
     () => expenses.filter((e) => !catByName[e.category]?.is_savings).reduce((sum, e) => sum + Number(e.amount), 0),
     [expenses, catByName]
   )
+  const totalSavings = totalSpent - spendOnly
 
   const byCategory = useMemo(() => {
     const map = {}
@@ -35,22 +33,31 @@ export default function Dashboard({ expenses, budgets, categories }) {
         category: b.category,
         icon: catByName[b.category]?.icon,
         spent: map[b.category] || 0,
-        limit: monthlyLimit(b),
-        yearlyLimit: catByName[b.category]?.period === 'yearly' ? Number(b.monthly_limit) : null,
         savings: !!catByName[b.category]?.is_savings,
       }))
       .sort((a, b) => b.spent - a.spent)
   }, [expenses, budgets, catByName])
 
-  const remaining = totalBudget - totalSpent
+  const remaining = totalBudget - spendOnly
+
+  const expenseCategories = useMemo(() => byCategory.filter((c) => !c.savings), [byCategory])
+  const savingsTransactions = useMemo(
+    () => expenses.filter((e) => catByName[e.category]?.is_savings),
+    [expenses, catByName]
+  )
+
+  function selectTab(tab) {
+    if (tab === selectedTab) {
+      setExpanded((e) => !e)
+    } else {
+      setSelectedTab(tab)
+      setExpanded(true)
+    }
+  }
 
   return (
-    <div className="space-y-3">
-      <button
-        type="button"
-        onClick={() => setShowCategories((v) => !v)}
-        className="relative w-full overflow-hidden rounded-block bg-cream p-5 text-left"
-      >
+    <div className="overflow-hidden rounded-block border border-[#A1A88A] bg-cream">
+      <div className="relative overflow-hidden p-5">
         <Sunburst
           size={280}
           color="#3D4836"
@@ -66,40 +73,93 @@ export default function Dashboard({ expenses, budgets, categories }) {
               {remaining < 0 ? `Over by ${formatINR(-remaining)}` : `${formatINR(remaining)} left`}
             </span>
           </div>
-          <p className="mt-5 text-center text-[10px] uppercase tracking-wide text-muted">
-            {showCategories ? 'Hide Categories ▲' : 'View Categories ▼'}
-          </p>
         </div>
-      </button>
+      </div>
 
-      {showCategories && (
-        <div className="max-h-80 overflow-y-auto overscroll-contain rounded-block border-2 border-forest">
-          {byCategory.map((c, i) => {
-            const style = BLOCK_STYLES[i % BLOCK_STYLES.length]
-            const over = !c.savings && c.spent > c.limit
-            return (
-              <div
-                key={c.category}
-                className={`flex items-center justify-between gap-3 ${style.bg} px-3 py-2.5 ${i > 0 ? 'border-t border-forest/20' : ''}`}
-              >
-                <div className="flex items-center gap-2.5">
+      <div className="flex border-t border-[#CACCB3]">
+        <button
+          type="button"
+          onClick={() => selectTab('expenses')}
+          className={`flex flex-1 items-center justify-center gap-2 px-4 pb-4 pt-3 outline-none ${
+            expanded && selectedTab === 'expenses' ? 'border-b-[3px] border-[#535B4C]' : ''
+          }`}
+        >
+          <span className="text-sm font-medium text-ink opacity-50">Expenses</span>
+          <span
+            className={`text-sm font-bold ${
+              expanded && selectedTab === 'expenses' ? 'text-[#535B4C]' : 'text-ink opacity-50'
+            }`}
+          >
+            {formatINR(spendOnly)}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => selectTab('savings')}
+          className={`flex flex-1 items-center justify-center gap-2 px-4 pb-4 pt-3 outline-none ${
+            expanded && selectedTab === 'savings' ? 'border-b-[3px] border-[#535B4C]' : ''
+          }`}
+        >
+          <span className="text-sm font-medium text-ink opacity-50">Savings</span>
+          <span
+            className={`text-sm font-bold ${
+              expanded && selectedTab === 'savings' ? 'text-[#535B4C]' : 'text-ink opacity-50'
+            }`}
+          >
+            {formatINR(totalSavings)}
+          </span>
+        </button>
+      </div>
+
+      {expanded && selectedTab === 'expenses' && (
+        <div className="p-3">
+          {expenseCategories.length === 0 ? (
+            <p className="px-1 py-2 text-sm text-muted">No expense categories.</p>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {expenseCategories.map((c) => (
+                <div
+                  key={c.category}
+                  className="flex flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center"
+                >
                   <span className="text-lg">{c.icon}</span>
-                  <p className={`text-sm font-semibold ${style.text}`}>{c.category}</p>
-                  {over && <span className="text-[9px] font-semibold text-forest-dark">OVER</span>}
-                  {c.savings && <span className="text-[9px] font-semibold uppercase opacity-60">Tracking only</span>}
+                  <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink">
+                    {c.category}
+                  </span>
+                  <span className="text-xs font-bold text-ink">{formatINR(c.spent)}</span>
                 </div>
-                <div className="text-right">
-                  <p className={`text-sm font-bold leading-tight ${style.text}`}>{formatINR(c.spent)}</p>
-                  {!c.savings && (
-                    <p className={`text-[10px] ${style.muted}`}>
-                      of {formatINR(c.limit)}
-                      {c.yearlyLimit != null && ` (${formatINR(c.yearlyLimit)}/yr)`}
-                    </p>
-                  )}
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {expanded && selectedTab === 'savings' && (
+        <div className="p-3">
+          {savingsTransactions.length === 0 ? (
+            <p className="px-1 py-2 text-sm text-muted">No savings transactions.</p>
+          ) : (
+            <div className="overflow-hidden rounded-block bg-sage/40">
+              {savingsTransactions.map((e, i) => (
+                <div
+                  key={e.id}
+                  className={`flex items-center gap-3 px-3 py-2.5 ${i > 0 ? 'border-t border-sage-dark/30' : ''}`}
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-block bg-forest text-base text-cream">
+                    {catByName[e.category]?.icon}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-ink">{e.description || e.category}</p>
+                    <p className="truncate text-[10px] uppercase tracking-wide text-muted">{e.category}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-ink">{formatINR(e.amount)}</p>
+                    <p className="text-[10px] text-muted">{formatDateDDMMYYYY(e.date)}</p>
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

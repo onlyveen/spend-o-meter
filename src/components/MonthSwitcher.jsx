@@ -5,6 +5,7 @@ import PaymentModeSelect from './PaymentModeSelect'
 export default function MonthSwitcher({
   month,
   onChange,
+  bare = false,
   showFilters = false,
   categories = [],
   categoryFilter = '',
@@ -18,7 +19,13 @@ export default function MonthSwitcher({
   const isCurrentMonth = month === currentMonthStr()
 
   return (
-    <div className="sticky top-2 z-30 flex items-center gap-2 rounded-block bg-cream px-4 py-3 shadow-sm">
+    <div
+      className={
+        bare
+          ? 'flex items-center gap-2 px-1 py-2'
+          : 'sticky top-2 z-30 flex items-center gap-2 rounded-block bg-cream px-4 py-3 shadow-sm'
+      }
+    >
       <button
         onClick={() => onChange(shiftMonth(month, -1))}
         className="text-lg text-muted hover:text-ink"
