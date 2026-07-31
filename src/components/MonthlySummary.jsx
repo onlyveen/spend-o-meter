@@ -115,10 +115,10 @@ export default function MonthlySummary({ month, expenses, period, onPeriodChange
         )}
         <div className="grid grid-cols-4 gap-2">
           {activeCategories.map(([category, amount]) => (
-            <div key={category} className="flex flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center">
+            <div key={category} className="flex w-full min-w-0 flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center">
               <span className="text-lg">{iconByName[category]}</span>
-              <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink">{category}</span>
-              <span className="text-xs font-bold text-ink">{formatINR(amount)}</span>
+              <span className="w-full text-[10px] font-medium uppercase leading-tight tracking-wide text-ink">{category}</span>
+              <span className="w-full text-xs font-bold text-ink">{formatINR(amount)}</span>
             </div>
           ))}
         </div>

@@ -11,7 +11,8 @@ export function useExpenses(month, ready = true) {
     setError('')
     const startDate = `${month}-01`
     const [year, m] = month.split('-').map(Number)
-    const endDate = new Date(year, m, 0).toISOString().slice(0, 10)
+    const daysInMonth = new Date(year, m, 0).getDate()
+    const endDate = `${month}-${String(daysInMonth).padStart(2, '0')}`
 
     const { data, error } = await supabase
       .from('expenses')

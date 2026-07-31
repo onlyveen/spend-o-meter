@@ -120,13 +120,13 @@ export default function Dashboard({ expenses, budgets, categories }) {
               {expenseCategories.map((c) => (
                 <div
                   key={c.category}
-                  className="flex flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center"
+                  className="flex w-full min-w-0 flex-col items-center gap-1 rounded-block bg-sage/40 px-2 py-3 text-center"
                 >
                   <span className="text-lg">{c.icon}</span>
-                  <span className="truncate text-[10px] font-medium uppercase tracking-wide text-ink">
+                  <span className="w-full text-[10px] font-medium uppercase leading-tight tracking-wide text-ink">
                     {c.category}
                   </span>
-                  <span className="text-xs font-bold text-ink">{formatINR(c.spent)}</span>
+                  <span className="w-full text-xs font-bold text-ink">{formatINR(c.spent)}</span>
                 </div>
               ))}
             </div>
