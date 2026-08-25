@@ -3,6 +3,7 @@ import { useAuth } from './lib/AuthContext'
 import { useExpenses } from './lib/useExpenses'
 import { useCategories } from './lib/useCategories'
 import { useBudget } from './lib/useBudget'
+import { useProfiles } from './lib/useProfiles'
 import { useAppUpdate } from './lib/useAppUpdate'
 import { currentMonthStr } from './lib/format'
 import Login from './pages/Login'
@@ -52,6 +53,7 @@ export default function App() {
   const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(!loading && !!user)
   const { budgets, saveBudgets } = useBudget(month, categories, !loading && !!user && categories.length > 0)
+  const { profiles } = useProfiles(!loading && !!user)
 
   useEffect(() => {
     const t = setTimeout(() => setShowSplash(false), 1000)
@@ -176,6 +178,8 @@ export default function App() {
               categories={categories}
               categoryFilter={categoryFilter}
               paymentFilter={paymentFilter}
+              profiles={profiles}
+              currentUserId={user.id}
             />
           )}
           {tab === 'budget' && (

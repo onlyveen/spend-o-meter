@@ -17,6 +17,80 @@ begin
 end$$;
 
 -- ============================================================
+-- Table: profiles
+-- One row per auth user, auto-created on signup (see trigger
+-- below). Lets the UI show *who* logged an expense, since the
+-- client can't read other users' auth.users rows directly.
+-- ============================================================
+create table if not exists profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text,
+  full_name text,
+  created_at timestamptz not null default now()
+);
+
+alter table profiles enable row level security;
+
+drop policy if exists "Authenticated users can view all profiles" on profiles;
+create policy "Authenticated users can view all profiles"
+  on profiles for select
+  using (auth.role() = 'authenticated');
+
+drop policy if exists "Users can insert their own profile" on profiles;
+create policy "Users can insert their own profile"
+  on profiles for insert
+  with check (auth.uid() = id);
+
+drop policy if exists "Users can update their own profile" on profiles;
+create policy "Users can update their own profile"
+  on profiles for update
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
+
+-- Auto-create a profile row whenever a new auth user signs up,
+-- falling back to a title-cased version of their email handle
+-- when no full_name was supplied at signup.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (
+    new.id,
+    new.email,
+    coalesce(
+      nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+      nullif(trim(new.raw_user_meta_data->>'name'), ''),
+      initcap(replace(split_part(new.email, '@', 1), '.', ' '))
+    )
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- Backfill profiles for any users created before this table existed.
+insert into public.profiles (id, email, full_name)
+select
+  id,
+  email,
+  coalesce(
+    nullif(trim(raw_user_meta_data->>'full_name'), ''),
+    nullif(trim(raw_user_meta_data->>'name'), ''),
+    initcap(replace(split_part(email, '@', 1), '.', ' '))
+  )
+from auth.users
+on conflict (id) do nothing;
+
+-- ============================================================
 -- Table: expenses
 -- ============================================================
 create table if not exists expenses (
@@ -69,31 +143,61 @@ create table if not exists categories (
 create index if not exists categories_user_sort_idx on categories (user_id, sort_order);
 
 -- ============================================================
+-- Migration: budget/categories used to be unique per-user. Now
+-- that data is shared across all users in the project, uniqueness
+-- must drop user_id so two users editing the same category don't
+-- create duplicate rows instead of updating the shared one.
+-- (No-ops safely if already migrated or the old constraint name
+-- doesn't match, since the new constraint is added regardless.)
+-- ============================================================
+alter table budget drop constraint if exists budget_user_id_category_month_key;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'budget_category_month_key') then
+    alter table budget add constraint budget_category_month_key unique (category, month);
+  end if;
+end$$;
+
+alter table categories drop constraint if exists categories_user_id_name_key;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'categories_name_key') then
+    alter table categories add constraint categories_name_key unique (name);
+  end if;
+end$$;
+
+-- ============================================================
 -- Row Level Security
--- This is a single-user app per Supabase project, but RLS still
--- scopes every row to the authenticated user for safety.
+-- All auth users in this Supabase project share one household's
+-- data (any signed-in user can see/edit all expenses, budget, and
+-- categories) — this is a shared-account app, not multi-tenant.
+-- `user_id` is kept on each row to record who logged it, not to
+-- restrict access.
 -- ============================================================
 alter table expenses enable row level security;
 alter table budget enable row level security;
 alter table categories enable row level security;
 
 drop policy if exists "Users can manage their own expenses" on expenses;
-create policy "Users can manage their own expenses"
+drop policy if exists "Authenticated users can manage all expenses" on expenses;
+create policy "Authenticated users can manage all expenses"
   on expenses for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
 drop policy if exists "Users can manage their own budget" on budget;
-create policy "Users can manage their own budget"
+drop policy if exists "Authenticated users can manage all budget" on budget;
+create policy "Authenticated users can manage all budget"
   on budget for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
 drop policy if exists "Users can manage their own categories" on categories;
-create policy "Users can manage their own categories"
+drop policy if exists "Authenticated users can manage all categories" on categories;
+create policy "Authenticated users can manage all categories"
   on categories for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
 -- ============================================================
 -- Seed: default budget for the current month

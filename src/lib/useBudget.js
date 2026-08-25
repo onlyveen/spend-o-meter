@@ -42,7 +42,7 @@ export function useBudget(month, categories, ready = true) {
       user_id: userData.user.id,
     }))
 
-    const { error } = await supabase.from('budget').upsert(rows, { onConflict: 'user_id,category,month' })
+    const { error } = await supabase.from('budget').upsert(rows, { onConflict: 'category,month' })
     if (error) throw error
     await fetchBudget()
   }

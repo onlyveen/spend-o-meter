@@ -5,7 +5,16 @@ import CategorySelect from './CategorySelect'
 
 const fieldClass = 'rounded-block bg-sage/40 px-2 py-1.5 text-sm text-ink outline-none'
 
-export default function ExpenseList({ expenses, onUpdate, onDelete, categories, categoryFilter = '', paymentFilter = '' }) {
+export default function ExpenseList({
+  expenses,
+  onUpdate,
+  onDelete,
+  categories,
+  categoryFilter = '',
+  paymentFilter = '',
+  profiles = {},
+  currentUserId = null,
+}) {
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState(null)
   const iconByName = useMemo(() => Object.fromEntries(categories.map((c) => [c.name, c.icon])), [categories])
@@ -119,6 +128,11 @@ export default function ExpenseList({ expenses, onUpdate, onDelete, categories, 
                 <div className="text-right">
                   <p className="font-semibold text-ink">{formatINR(expense.amount)}</p>
                   <p className="text-xs text-muted">{formatDateDDMMYYYY(expense.date)}</p>
+                  {expense.user_id && (
+                    <p className="text-[10px] text-muted/70">
+                      {expense.user_id === currentUserId ? 'You' : profiles[expense.user_id] || 'Unknown'}
+                    </p>
+                  )}
                 </div>
                 <div className="flex shrink-0 flex-col gap-1">
                   <button onClick={() => startEdit(expense)} aria-label="Edit" className="text-xs text-muted">

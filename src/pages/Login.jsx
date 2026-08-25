@@ -6,6 +6,7 @@ export default function Login() {
   const [mode, setMode] = useState('sign_in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,7 +33,11 @@ export default function Login() {
     const { error } =
       mode === 'sign_in'
         ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signUp({
+            email,
+            password,
+            options: fullName.trim() ? { data: { full_name: fullName.trim() } } : undefined,
+          })
 
     setLoading(false)
 
@@ -68,6 +73,18 @@ export default function Login() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {mode === 'sign_up' && (
+            <div>
+              <label className="mb-1 block text-xs text-muted">Name</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full rounded-block bg-sage/40 px-3 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70"
+                placeholder="Your name"
+              />
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-xs text-muted">Email</label>
             <input
