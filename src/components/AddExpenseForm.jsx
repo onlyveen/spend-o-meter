@@ -4,7 +4,7 @@ import { todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
 
 const fieldClass =
-  'w-full rounded-block box-border border-none bg-sage/40 px-3 py-2.5 h-15 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
+  'w-full rounded-block box-border border-none bg-sage/40 px-3 py-2.5 h-25 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
 
 export default function AddExpenseForm({ onAdd, categories }) {
   const emptyForm = {
