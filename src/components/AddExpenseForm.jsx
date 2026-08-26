@@ -60,7 +60,7 @@ export default function AddExpenseForm({ onAdd, categories }) {
             value={form.date}
             max={todayISO()}
             onChange={(e) => update('date', e.target.value)}
-            className={fieldClass}
+            className={`${fieldClass} p-0`}
           />
         </div>
         <div>
