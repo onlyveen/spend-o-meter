@@ -4,7 +4,7 @@ import { todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
 
 const fieldClass =
-  'w-full rounded-block box-border border-none bg-sage/40 px-3 py-2.5 h-25 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
+  'w-full rounded-block box-border border-none bg-sage/40 p-2 h-12 text-sm text-ink outline-none placeholder:text-muted focus:bg-sage/70'
 
 export default function AddExpenseForm({ onAdd, categories }) {
   const emptyForm = {
@@ -60,6 +60,7 @@ export default function AddExpenseForm({ onAdd, categories }) {
             value={form.date}
             max={todayISO()}
             onChange={(e) => update('date', e.target.value)}
+            onClick={(e) => e.currentTarget.showPicker?.()}
             className={fieldClass}
           />
         </div>
@@ -96,7 +97,7 @@ export default function AddExpenseForm({ onAdd, categories }) {
               type="button"
               key={p.value}
               onClick={() => update('payment_mode', p.value)}
-              className={`rounded-block py-2 text-[11px] font-medium ${form.payment_mode === p.value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
+              className={`rounded-block p-2 h-12 text-[11px] font-medium ${form.payment_mode === p.value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
                 }`}
             >
               {p.label}

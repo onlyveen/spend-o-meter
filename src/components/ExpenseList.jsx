@@ -63,6 +63,7 @@ export default function ExpenseList({
                     max={todayISO()}
                     value={editForm.date}
                     onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
+                    onClick={(e) => e.currentTarget.showPicker?.()}
                     className={fieldClass}
                   />
                   <input

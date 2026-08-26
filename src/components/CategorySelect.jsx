@@ -44,9 +44,8 @@ export default function CategorySelect({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-label={value ? `Category filter: ${value}` : 'Filter by category'}
-          className={`flex h-9 w-9 items-center justify-center rounded-full text-lg outline-none ${
-            value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
-          }`}
+          className={`flex h-9 w-9 items-center justify-center rounded-full text-lg outline-none ${value ? 'bg-forest text-cream' : 'bg-sage/40 text-ink'
+            }`}
         >
           {value ? iconByName[value] : '🏷️'}
         </button>
@@ -54,7 +53,7 @@ export default function CategorySelect({
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center gap-2 rounded-block bg-sage/40 px-3 py-2.5 text-left text-sm text-ink outline-none"
+          className="flex w-full items-center gap-2 rounded-block bg-sage/40 p-2 h-12 text-left text-sm text-ink outline-none"
         >
           {value ? (
             <>
@@ -69,9 +68,8 @@ export default function CategorySelect({
 
       {open && (
         <div
-          className={`absolute top-full z-20 mt-1 max-h-64 w-56 overflow-hidden rounded-block bg-cream shadow-lg ${
-            compact ? 'right-0' : 'left-0 right-0'
-          }`}
+          className={`absolute top-full z-20 mt-1 max-h-64 w-56 overflow-hidden rounded-block bg-cream shadow-lg ${compact ? 'right-0' : 'left-0 right-0'
+            }`}
         >
           <input
             ref={inputRef}
@@ -86,9 +84,8 @@ export default function CategorySelect({
               <button
                 type="button"
                 onClick={() => select('')}
-                className={`flex w-full items-center px-3 py-2 text-left text-sm ${
-                  !value ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
-                }`}
+                className={`flex w-full items-center px-3 py-2 text-left text-sm ${!value ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
+                  }`}
               >
                 All categories
               </button>
@@ -99,9 +96,8 @@ export default function CategorySelect({
                 type="button"
                 key={c.id}
                 onClick={() => select(c.name)}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${
-                  value === c.name ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
-                }`}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${value === c.name ? 'bg-forest text-cream' : 'text-ink hover:bg-sage/30'
+                  }`}
               >
                 <span>{c.icon}</span>
                 <span className="truncate">{c.name}</span>
