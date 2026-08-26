@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { IoCalendarOutline } from 'react-icons/io5'
 import { PAYMENT_MODES } from '../lib/constants'
 import { todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
@@ -55,14 +56,17 @@ export default function AddExpenseForm({ onAdd, categories }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs text-muted">Date</label>
-          <input
-            type="date"
-            value={form.date}
-            max={todayISO()}
-            onChange={(e) => update('date', e.target.value)}
-            onClick={(e) => e.currentTarget.showPicker?.()}
-            className={fieldClass}
-          />
+          <div className="relative">
+            <input
+              type="date"
+              value={form.date}
+              max={todayISO()}
+              onChange={(e) => update('date', e.target.value)}
+              onClick={(e) => e.currentTarget.showPicker?.()}
+              className={`${fieldClass} pr-9`}
+            />
+            <IoCalendarOutline className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-lg text-ink" />
+          </div>
         </div>
         <div>
           <label className="mb-1 block text-xs text-muted">Amount (₹)</label>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { IoCalendarOutline } from 'react-icons/io5'
 import { PAYMENT_MODES, PAYMENT_MODE_LABELS } from '../lib/constants'
 import { formatDateDDMMYYYY, formatINR, todayISO } from '../lib/format'
 import CategorySelect from './CategorySelect'
@@ -58,14 +59,17 @@ export default function ExpenseList({
             {editingId === expense.id ? (
               <div className="space-y-2 p-3">
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    max={todayISO()}
-                    value={editForm.date}
-                    onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
-                    onClick={(e) => e.currentTarget.showPicker?.()}
-                    className={fieldClass}
-                  />
+                  <div className="relative">
+                    <input
+                      type="date"
+                      max={todayISO()}
+                      value={editForm.date}
+                      onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
+                      onClick={(e) => e.currentTarget.showPicker?.()}
+                      className={`w-full ${fieldClass} pr-8`}
+                    />
+                    <IoCalendarOutline className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-ink" />
+                  </div>
                   <input
                     type="number"
                     step="0.01"
