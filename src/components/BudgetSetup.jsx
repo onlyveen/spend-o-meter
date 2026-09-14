@@ -73,7 +73,7 @@ export default function BudgetSetup({
             value={newCategory.icon}
             onChange={(e) => setNewCategory((f) => ({ ...f, icon: e.target.value }))}
             className="w-12 rounded-md bg-sage/40 px-2 py-2 text-center text-lg outline-none"
-            maxLength={2}
+            maxLength={8}
           />
           <input
             type="text"
@@ -116,7 +116,21 @@ export default function BudgetSetup({
           return (
             <div key={b.category} className={`flex items-center justify-between gap-3 px-4 py-6 ${BLOCK_STYLES[i % 2]}`}>
               <div className="flex flex-1 items-center gap-2">
-                <span className="text-base">{cat?.icon}</span>
+                {editing ? (
+                  <input
+                    type="text"
+                    defaultValue={cat?.icon}
+                    onBlur={(e) => {
+                      const icon = e.target.value.trim()
+                      if (cat && icon && icon !== cat.icon) onUpdateCategory(cat.id, { icon })
+                    }}
+                    aria-label={`Icon for ${b.category}`}
+                    className="w-10 rounded-md bg-black/10 px-1 py-1 text-center text-base outline-none"
+                    maxLength={8}
+                  />
+                ) : (
+                  <span className="text-base">{cat?.icon}</span>
+                )}
                 {editing ? (
                   <input
                     type="text"

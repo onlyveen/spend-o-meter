@@ -50,8 +50,17 @@ export default function App() {
   const updateAvailable = useAppUpdate()
   const touchStartRef = useRef(null)
 
-  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(month, !loading && !!user)
+  const { expenses, addExpense, updateExpense, deleteExpense, refetch: refetchExpenses } = useExpenses(month, !loading && !!user)
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories(!loading && !!user)
+
+  async function handleUpdateCategory(id, updates) {
+    const previousName = categories.find((c) => c.id === id)?.name
+    await updateCategory(id, updates)
+    if (updates.name && updates.name !== previousName) {
+      if (categoryFilter === previousName) setCategoryFilter(updates.name)
+      await refetchExpenses()
+    }
+  }
   const { budgets, saveBudgets } = useBudget(month, categories, !loading && !!user && categories.length > 0)
   const { profiles } = useProfiles(!loading && !!user)
 
@@ -188,7 +197,7 @@ export default function App() {
               onSave={saveBudgets}
               categories={categories}
               onAddCategory={addCategory}
-              onUpdateCategory={updateCategory}
+              onUpdateCategory={handleUpdateCategory}
               onDeleteCategory={deleteCategory}
               editing={editingCategories}
             />

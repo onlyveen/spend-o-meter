@@ -61,18 +61,20 @@ export function useCategories(ready = true) {
     const { error } = await supabase.from('categories').update(updates).eq('id', id)
     if (error) throw error
 
+    // Expenses/budget store the category as plain text, so a rename has to be
+    // carried over to every past record. Data is shared across the household,
+    // so this must not be scoped to the current user.
     if (existing && updates.name && updates.name !== existing.name) {
-      const { data: userData } = await supabase.auth.getUser()
-      await supabase
+      const { error: expensesError } = await supabase
         .from('expenses')
         .update({ category: updates.name })
-        .eq('user_id', userData.user.id)
         .eq('category', existing.name)
-      await supabase
+      if (expensesError) throw expensesError
+      const { error: budgetError } = await supabase
         .from('budget')
         .update({ category: updates.name })
-        .eq('user_id', userData.user.id)
         .eq('category', existing.name)
+      if (budgetError) throw budgetError
     }
 
     await fetchCategories()
