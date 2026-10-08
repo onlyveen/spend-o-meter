@@ -73,18 +73,24 @@ Deno.serve(async (req) => {
   const prompt = `You extract expenses from ${source} for an Indian personal expense tracker.
 Today's date is ${today}. Amounts are in Indian Rupees (₹).
 
-Return one entry per separate payment:
-- A single receipt/bill/payment screenshot is ONE entry with its final total, even if it lists many items.
-- Each photo is usually its own payment.
+Return one entry per category per payment:
+- An itemised receipt/bill: sort its line items into the categories below and return ONE entry per category,
+  with amount = the sum of that category's items. Example: a supermarket bill with sunscreen, peanut butter and
+  ice cream becomes separate entries for personal care, groceries and eating out (if those categories exist).
+  If all items fit one category, return a single entry.
+- Bill-level tax, delivery fees or discounts: spread them across the entries in proportion to their amounts,
+  so the entries add up exactly to the final total paid.
+- A payment screenshot or receipt without line items is one entry with its total.
+- Each photo is its own payment; split each one as above.
 - A voice note may mention several payments ("200 for milk and 450 for dinner") - one entry each.
 - Return an empty list if there is no expense.
 
 Fields for each entry:
-- amount: the final total actually paid (after tax/discounts), as a number. Use 0 if you can't tell.
+- amount: the amount actually paid for this entry (after tax/discounts), as a number. Use 0 if you can't tell.
 - date: YYYY-MM-DD. Use the date on the receipt or the one mentioned ("yesterday" etc., relative to today). Default to today. Never a future date.
 - category: pick the closest match from this list exactly as written: ${JSON.stringify(categories)}.
 - payment_mode: one of cash, credit_card, upi, debit_card. UPI apps (GPay, PhonePe, Paytm) mean upi. Default to upi if unclear.
-- description: a short note, e.g. merchant or item ("Dinner at Paradise"). Max 60 characters.`
+- description: a short note: merchant and what was bought, e.g. "Dinner at Paradise" or "DMart: Peanut butter, Bread". Max 80 characters.`
 
   const expenseSchema = {
     type: 'object',
@@ -189,7 +195,7 @@ Fields for each entry:
             : today,
         category: categories.includes(e.category as string) ? e.category : null,
         payment_mode: PAYMENT_MODES.includes(e.payment_mode as string) ? e.payment_mode : null,
-        description: typeof e.description === 'string' ? e.description.slice(0, 60) : '',
+        description: typeof e.description === 'string' ? e.description.slice(0, 80) : '',
       }
     })
   if (!expenses.length) return json({ error: "Couldn't find an expense in that, try again" }, 422)
