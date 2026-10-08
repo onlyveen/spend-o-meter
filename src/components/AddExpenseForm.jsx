@@ -20,9 +20,9 @@ const ORB_BACKGROUND = '#2C342A' // forest-dark
 const MAX_PHOTOS = 5
 
 const TABS = [
+  { id: 'manual', label: 'Manual', Icon: IoCreateOutline },
   { id: 'image', label: 'Image', Icon: IoImageOutline },
   { id: 'voice', label: 'Voice', Icon: IoMicOutline },
-  { id: 'manual', label: 'Manual', Icon: IoCreateOutline },
 ]
 
 const fieldClass =
