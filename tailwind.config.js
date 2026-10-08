@@ -26,6 +26,15 @@ export default {
       borderRadius: {
         block: '14px',
       },
+      keyframes: {
+        'card-in': {
+          from: { opacity: '0', transform: 'translateY(8px) scale(0.98)' },
+          to: { opacity: '1', transform: 'none' },
+        },
+      },
+      animation: {
+        'card-in': 'card-in 200ms ease-out',
+      },
     },
   },
   plugins: [],

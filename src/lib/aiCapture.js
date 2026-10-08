@@ -95,8 +95,10 @@ export async function startRecording() {
   }
 }
 
-// `media` is { image } or { audio }, each { mimeType, data }.
-export async function parseExpense(media, categories) {
+// `media` is { images: [...] } or { audio }, each item { mimeType, data }.
+// Resolves to an array of expense drafts (one receipt = one expense, a voice
+// note can mention several).
+export async function parseExpenses(media, categories) {
   const { data, error } = await supabase.functions.invoke('parse-expense', {
     body: { ...media, categories: categories.map((c) => c.name), today: todayISO() },
   })
@@ -104,5 +106,5 @@ export async function parseExpense(media, categories) {
     const detail = await error.context?.json?.().catch(() => null)
     throw new Error(detail?.error ?? detail?.message ?? error.message ?? "Couldn't read that, try again")
   }
-  return data
+  return data.expenses ?? [data]
 }
