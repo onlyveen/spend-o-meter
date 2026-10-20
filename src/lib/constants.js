@@ -9,7 +9,7 @@ export const DEFAULT_CATEGORIES = [
   { name: 'Subscriptions', icon: '🔁', period: 'yearly', is_savings: false, default_limit: 55896 },
   { name: 'Medical', icon: '⚕️', period: 'monthly', is_savings: false, default_limit: 2000 },
   { name: 'Misc', icon: '✦', period: 'monthly', is_savings: false, default_limit: 5000 },
-  { name: 'Home', icon: '🏠', period: 'monthly', is_savings: false, default_limit: 0 },
+  { name: 'House Hold', icon: '🏠', period: 'monthly', is_savings: false, default_limit: 0 },
   { name: 'Medicine', icon: '🩺', period: 'monthly', is_savings: false, default_limit: 0 },
   { name: 'Spouse', icon: '💍', period: 'monthly', is_savings: false, default_limit: 0 },
   { name: 'Rent', icon: '🏢', period: 'monthly', is_savings: false, default_limit: 0 },

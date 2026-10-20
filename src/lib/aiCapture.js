@@ -95,8 +95,8 @@ export async function startRecording() {
   }
 }
 
-// `media` is { images: [...] } or { audio }, each item { mimeType, data }.
-// Resolves to an array of expense drafts (one receipt = one expense, a voice
+// `media` is { text }, { images: [...] } or { audio }, each media item { mimeType, data }.
+// Resolves to an array of expense drafts (one receipt = one expense, a message or voice
 // note can mention several).
 export async function parseExpenses(media, categories) {
   const { data, error } = await supabase.functions.invoke('parse-expense', {

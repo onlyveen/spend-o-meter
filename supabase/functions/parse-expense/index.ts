@@ -1,4 +1,5 @@
-// parse-expense: turns receipt photos or a voice note into one or more expenses.
+// parse-expense: turns a chat message, receipt photos or a voice note into one
+// or more expenses.
 //
 // The client sends the media inline (base64) and nothing is stored: the
 // image/audio only lives for the duration of this request. The result is
@@ -23,6 +24,7 @@ const PAYMENT_MODES = ['cash', 'credit_card', 'upi', 'debit_card']
 const MAX_MEDIA_BASE64 = 8 * 1024 * 1024 // ~6 MB of raw bytes, across all files
 const MAX_IMAGES = 5
 const MAX_EXPENSES = 20
+const MAX_TEXT = 1000
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,7 +46,14 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
   if (!GEMINI_API_KEY) return json({ error: 'GEMINI_API_KEY is not set' }, 500)
 
-  let body: { images?: Media[]; image?: Media; audio?: Media; categories?: string[]; today?: string }
+  let body: {
+    text?: string
+    images?: Media[]
+    image?: Media
+    audio?: Media
+    categories?: string[]
+    today?: string
+  }
   try {
     body = await req.json()
   } catch {
@@ -54,8 +63,9 @@ Deno.serve(async (req) => {
   // `image` (single) is still accepted for older app versions.
   const images = body.images ?? (body.image ? [body.image] : [])
   const media = body.audio ? [body.audio] : images
-  if (!media.length || media.some((m) => !m?.data || !m?.mimeType)) {
-    return json({ error: 'Send an image or audio' }, 400)
+  const userText = typeof body.text === 'string' ? body.text.trim().slice(0, MAX_TEXT) : ''
+  if ((!media.length && !userText) || media.some((m) => !m?.data || !m?.mimeType)) {
+    return json({ error: 'Send a message, an image or audio' }, 400)
   }
   if (images.length > MAX_IMAGES) return json({ error: `Up to ${MAX_IMAGES} photos at a time` }, 400)
   if (media.reduce((n, m) => n + m.data.length, 0) > MAX_MEDIA_BASE64) {
@@ -64,11 +74,13 @@ Deno.serve(async (req) => {
 
   const categories = (body.categories ?? []).filter((c) => typeof c === 'string' && c.trim())
   const today = body.today ?? new Date().toISOString().slice(0, 10)
-  const source = body.audio
-    ? 'a voice note'
+  const source = !media.length
+    ? 'a chat message'
+    : body.audio
+      ? 'a voice note'
     : images.length > 1
-      ? `${images.length} photos (receipts, bills, or payment screenshots)`
-      : 'a photo (receipt, bill, or payment screenshot)'
+        ? `${images.length} photos (receipts, bills, or payment screenshots)`
+        : 'a photo (receipt, bill, or payment screenshot)'
 
   const prompt = `You extract expenses from ${source} for an Indian personal expense tracker.
 Today's date is ${today}. Amounts are in Indian Rupees (₹).
@@ -82,7 +94,7 @@ Return one entry per category per payment:
   so the entries add up exactly to the final total paid.
 - A payment screenshot or receipt without line items is one entry with its total.
 - Each photo is its own payment; split each one as above.
-- A voice note may mention several payments ("200 for milk and 450 for dinner") - one entry each.
+- A chat message or voice note may mention several payments ("200 for milk and 450 for dinner") - one entry each.
 - Return an empty list if there is no expense.
 
 Fields for each entry:
@@ -115,6 +127,7 @@ Fields for each entry:
         role: 'user',
         parts: [
           { text: prompt },
+          ...(userText ? [{ text: `Message: ${JSON.stringify(userText)}` }] : []),
           ...media.map((m) => ({ inline_data: { mime_type: m.mimeType, data: m.data } })),
         ],
       },
